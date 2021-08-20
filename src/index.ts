@@ -84,7 +84,6 @@ declare global {
   }
 }
 
-// @ts-ignore
 declare module "vue/types/vue" {
   interface Vue {
     $intercom: Intercom;
@@ -151,8 +150,7 @@ const intercomVuePlugin: PluginObject<messengerAttributes> = {
         },
         async boot(options: messengerAttributes) {
           await this.isReady();
-          if (!options?.app_id) {
-            // @ts-ignore
+          if (!options?.app_id && settings) {
             options.app_id = settings.app_id;
           }
           this.callIntercom("boot", options);
@@ -190,7 +188,7 @@ const intercomVuePlugin: PluginObject<messengerAttributes> = {
           await this.isReady();
           this.callIntercom(
             "showNewMessage",
-            typeof content === "string" ? content : ""
+            content ? content : ""
           );
         },
         async trackEvent(name: string, ...metadata: any[]) {

@@ -58,8 +58,7 @@ const intercomVuePlugin = {
                 },
                 async boot(options) {
                     await this.isReady();
-                    if (!options?.app_id) {
-                        // @ts-ignore
+                    if (!options?.app_id && settings) {
                         options.app_id = settings.app_id;
                     }
                     this.callIntercom("boot", options);
@@ -69,7 +68,6 @@ const intercomVuePlugin = {
                     this.callIntercom("shutdown");
                 },
                 async update(options) {
-                    //TODO is this correct? we were using deconstruct, but I think that was wrong. Needs testing
                     await this.isReady();
                     this.callIntercom("update", options);
                 },
@@ -95,7 +93,7 @@ const intercomVuePlugin = {
                 },
                 async showNewMessage(content) {
                     await this.isReady();
-                    this.callIntercom("showNewMessage", typeof content === "string" ? content : "");
+                    this.callIntercom("showNewMessage", content ? content : "");
                 },
                 async trackEvent(name, ...metadata) {
                     await this.isReady();
@@ -116,22 +114,17 @@ const intercomVuePlugin = {
         });
         Vue.mixin({
             created() {
-                // @ts-ignore
                 if (!this.$intercom.installed) {
-                    // @ts-ignore
                     const loaded = () => this.$intercom.loadScript();
                     if (document.readyState === "complete") {
                         loaded();
                     }
-                    // @ts-ignore
                     else if (window.attachEvent) {
-                        // @ts-ignore
                         window.attachEvent("onload", loaded);
                     }
                     else {
                         window.addEventListener("load", loaded, false);
                     }
-                    // @ts-ignore
                     this.$intercom.installed = true;
                 }
             },
